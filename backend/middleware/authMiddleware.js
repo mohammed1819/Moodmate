@@ -10,6 +10,7 @@ const protect = async (req, res, next) => {
   }
 
   if (!token) {
+    console.log("No refresh token found in cookies"); // Debug log
     return res.status(401).json({ message: 'Not authorized, no token' });
   }
 
@@ -18,6 +19,7 @@ const protect = async (req, res, next) => {
     req.user = await User.findById(decoded.id).select('-password');
     next();
   } catch (error) {
+    console.log("Invalid refresh token:", error.message); // Debug log
     return res.status(401).json({ message: 'Not authorized, token failed' });
   }
 };
