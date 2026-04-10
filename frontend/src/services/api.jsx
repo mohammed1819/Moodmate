@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://moodmate-backend-jlk7.onrender.com',
+  baseURL: 'https://moodmate-backend-jlk7.onrender.com/api',
   withCredentials: true, // Important for sending cookies
 });
 
