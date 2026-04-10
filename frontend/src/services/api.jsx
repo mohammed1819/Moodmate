@@ -2,10 +2,10 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://moodmate-backend-jlk7.onrender.com/api',
-  withCredentials: true, // Important for sending cookies
+  withCredentials: true, // CRITICAL: Sends cookies
 });
 
-// Interceptor to add Access Token to headers
+// Request Interceptor
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) {
@@ -14,31 +14,42 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor to handle 401 errors and refresh token
+// Response Interceptor
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
+    // If 401 and we haven't tried to refresh yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+      
       try {
+        console.log("Token expired. Attempting refresh...");
+        
+        // Call refresh endpoint
         const { data } = await axios.post(
-          'http://localhost:5000/api/auth/refresh',
+          'https://moodmate-backend-jlk7.onrender.com/api/auth/refresh',
           {},
-          { withCredentials: true }
+          { withCredentials: true } // MUST send cookie here
         );
         
+        console.log("Refresh successful!");
         localStorage.setItem('accessToken', data.accessToken);
+        
+        // Retry original request with new token
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return api(originalRequest);
+        
       } catch (refreshError) {
-        // If refresh fails, log out user
+        console.error("Refresh failed:", refreshError);
+        // If refresh fails, log out
         localStorage.removeItem('accessToken');
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }
+    
     return Promise.reject(error);
   }
 );
