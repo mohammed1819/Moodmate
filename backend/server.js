@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 // CORS Configuration
 app.use(cors({
-  origin: 'http://localhost:5173', // Vite default port
+  origin: 'https://moodmate-nu.vercel.app',
   credentials: true, // Allow cookies
 }));
 
