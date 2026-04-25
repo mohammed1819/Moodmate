@@ -26,12 +26,18 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const register = async (username, email, password) => {
+// Inside AuthContext.jsx
+
+const register = async (username, email, password) => {
+  try {
     const { data } = await api.post('/auth/register', { username, email, password });
     localStorage.setItem('accessToken', data.accessToken);
     setUser(data);
     return data;
-  };
+  } catch (error) {
+    throw error;
+  }
+};
 
   const logout = async () => {
     await api.post('/auth/logout');
