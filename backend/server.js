@@ -19,6 +19,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'MoodMate Backend is Running' });
+});
+
 // CORS Configuration
 app.use(cors({
   origin: 'https://moodmate-nu.vercel.app',
